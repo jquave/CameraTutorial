@@ -42,28 +42,52 @@ class ViewController: UIViewController {
         
     }
     
-    func focusTo(value : Float) {
+    func updateDeviceSettings(focusValue : Float, isoValue : Float) {
         if let device = captureDevice {
             if(device.lockForConfiguration(nil)) {
-                device.setFocusModeLockedWithLensPosition(value, completionHandler: { (time) -> Void in
+                device.setFocusModeLockedWithLensPosition(focusValue, completionHandler: { (time) -> Void in
                     //
                 })
+                
+                // Adjust the iso to clamp between minIso and maxIso based on the active format
+                let minISO = device.activeFormat.minISO
+                let maxISO = device.activeFormat.maxISO
+                let clampedISO = isoValue * (maxISO - minISO) + minISO
+                
+                device.setExposureModeCustomWithDuration(AVCaptureExposureDurationCurrent, ISO: clampedISO, completionHandler: { (time) -> Void in
+                    //
+                })
+                
                 device.unlockForConfiguration()
             }
         }
     }
     
-    let screenWidth = UIScreen.mainScreen().bounds.size.width
+    func touchPercent(touch : UITouch) -> CGPoint {
+        // Get the dimensions of the screen in points
+        let screenSize = UIScreen.mainScreen().bounds.size
+        
+        // Create an empty CGPoint object set to 0, 0
+        var touchPer = CGPointZero
+        
+        // Set the x and y values to be the value of the tapped position, divided by the width/height of the screen
+        touchPer.x = touch.locationInView(self.view).x / screenSize.width
+        touchPer.y = touch.locationInView(self.view).y / screenSize.height
+        
+        // Return the populated CGPoint
+        return touchPer
+    }
+    
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        var anyTouch = touches.anyObject() as UITouch
-        var touchPercent = anyTouch.locationInView(self.view).x / screenWidth
-        focusTo(Float(touchPercent))
+        let touchPer = touchPercent( touches.anyObject() as UITouch )
+        //focusTo(Float(touchPer.x))
+        updateDeviceSettings(Float(touchPer.x), isoValue: Float(touchPer.y))
     }
 
     override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-        var anyTouch = touches.anyObject() as UITouch
-        var touchPercent = anyTouch.locationInView(self.view).x / screenWidth
-        focusTo(Float(touchPercent))
+        let touchPer = touchPercent( touches.anyObject() as UITouch )
+       //focusTo(Float(touchPer.x))
+        updateDeviceSettings(Float(touchPer.x), isoValue: Float(touchPer.y))
     }
     
     func configureDevice() {

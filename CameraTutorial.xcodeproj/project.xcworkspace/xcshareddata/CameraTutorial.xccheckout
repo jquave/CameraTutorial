@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>F44B9D75-2F78-4C98-896B-7ED2C3CDC9DF</string>
+	<key>IDESourceControlProjectName</key>
+	<string>CameraTutorial</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>3929C7655DEFEA93ECF5D8C0DFDF6F01639B9DE7</key>
+		<string>https://github.com/jquave/CameraTutorial.git</string>
+	</dict>
+	<key>IDESourceControlProjectPath</key>
+	<string>CameraTutorial.xcodeproj</string>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>3929C7655DEFEA93ECF5D8C0DFDF6F01639B9DE7</key>
+		<string>../..</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>https://github.com/jquave/CameraTutorial.git</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>3929C7655DEFEA93ECF5D8C0DFDF6F01639B9DE7</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>3929C7655DEFEA93ECF5D8C0DFDF6F01639B9DE7</string>
+			<key>IDESourceControlWCCName</key>
+			<string>CameraTutorial</string>
+		</dict>
+	</array>
+</dict>
+</plist>

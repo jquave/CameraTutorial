@@ -161,6 +161,7 @@
 				TargetAttributes = {
 					02F5BDDF19CE1C4900EDFD47 = {
 						CreatedOnToolsVersion = 6.1;
+						DevelopmentTeam = J6H4826VVV;
 					};
 					02F5BDF419CE1C4900EDFD47 = {
 						CreatedOnToolsVersion = 6.1;
@@ -407,6 +408,7 @@
 				02F5BE0119CE1C4900EDFD47 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		02F5BE0219CE1C4900EDFD47 /* Build configuration list for PBXNativeTarget "CameraTutorialTests" */ = {
 			isa = XCConfigurationList;
@@ -415,6 +417,7 @@
 				02F5BE0419CE1C4900EDFD47 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
