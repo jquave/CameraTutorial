@@ -9,7 +9,7 @@
 import UIKit
 import AVFoundation
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, /* For capturing barcodes */AVCaptureMetadataOutputObjectsDelegate {
 
     let captureSession = AVCaptureSession()
     var previewLayer : AVCaptureVideoPreviewLayer?
@@ -42,66 +42,7 @@ class ViewController: UIViewController {
         
     }
     
-    func updateDeviceSettings(focusValue : Float, isoValue : Float) {
-        if let device = captureDevice {
-            if(device.lockForConfiguration(nil)) {
-                device.setFocusModeLockedWithLensPosition(focusValue, completionHandler: { (time) -> Void in
-                    //
-                })
-                
-                // Adjust the iso to clamp between minIso and maxIso based on the active format
-                let minISO = device.activeFormat.minISO
-                let maxISO = device.activeFormat.maxISO
-                let clampedISO = isoValue * (maxISO - minISO) + minISO
-                
-                device.setExposureModeCustomWithDuration(AVCaptureExposureDurationCurrent, ISO: clampedISO, completionHandler: { (time) -> Void in
-                    //
-                })
-                
-                device.unlockForConfiguration()
-            }
-        }
-    }
-    
-    func touchPercent(touch : UITouch) -> CGPoint {
-        // Get the dimensions of the screen in points
-        let screenSize = UIScreen.mainScreen().bounds.size
-        
-        // Create an empty CGPoint object set to 0, 0
-        var touchPer = CGPointZero
-        
-        // Set the x and y values to be the value of the tapped position, divided by the width/height of the screen
-        touchPer.x = touch.locationInView(self.view).x / screenSize.width
-        touchPer.y = touch.locationInView(self.view).y / screenSize.height
-        
-        // Return the populated CGPoint
-        return touchPer
-    }
-    
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        let touchPer = touchPercent( touches.anyObject() as UITouch )
-        //focusTo(Float(touchPer.x))
-        updateDeviceSettings(Float(touchPer.x), isoValue: Float(touchPer.y))
-    }
-
-    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-        let touchPer = touchPercent( touches.anyObject() as UITouch )
-       //focusTo(Float(touchPer.x))
-        updateDeviceSettings(Float(touchPer.x), isoValue: Float(touchPer.y))
-    }
-    
-    func configureDevice() {
-        if let device = captureDevice {
-            device.lockForConfiguration(nil)
-            device.focusMode = .Locked
-            device.unlockForConfiguration()
-        }
-        
-    }
-    
     func beginSession() {
-        
-        configureDevice()
         
         var err : NSError? = nil
         captureSession.addInput(AVCaptureDeviceInput(device: captureDevice, error: &err))
@@ -110,12 +51,68 @@ class ViewController: UIViewController {
             println("error: \(err?.localizedDescription)")
         }
         
+        addOutputForBarcodeMetadata()
+        
         previewLayer = AVCaptureVideoPreviewLayer(session: captureSession)
         self.view.layer.addSublayer(previewLayer)
         previewLayer?.frame = self.view.layer.frame
         captureSession.startRunning()
+        
     }
+    
+    // Capture metadata for barcodes
+    var metadataOutput = AVCaptureMetadataOutput()
+    func addOutputForBarcodeMetadata() {
+        metadataOutput.setMetadataObjectsDelegate(self, queue: dispatch_get_main_queue())
+        captureSession.addOutput(metadataOutput)
+        
+        // This line is required, as little sense at that makes
+        metadataOutput.metadataObjectTypes = metadataOutput.availableMetadataObjectTypes
+    }
+    
+    // MARK: AVCaptureMetadataOutputObjectsDelegate
+    var canCaptureBarcode = true
+    func captureOutput(captureOutput: AVCaptureOutput!, didOutputMetadataObjects metadataObjects: [AnyObject]!, fromConnection connection: AVCaptureConnection!) {
 
+        if !canCaptureBarcode {
+            return
+        }
+        
+        // Types of barcodes AVKit will be able to find
+        let barcodeTypes = [AVMetadataObjectTypeUPCECode, AVMetadataObjectTypeCode39Code, AVMetadataObjectTypeCode39Mod43Code,
+            AVMetadataObjectTypeEAN13Code, AVMetadataObjectTypeEAN8Code, AVMetadataObjectTypeCode93Code, AVMetadataObjectTypeCode128Code,
+            AVMetadataObjectTypePDF417Code, AVMetadataObjectTypeQRCode, AVMetadataObjectTypeAztecCode] as [String]
+
+        // Loop through the returned metadata objects (might include a barcode)
+        for metadata in metadataObjects {
+            
+            // Use Swift's find() function to get the index of the metadata type, to see if it's in the list of barcode types
+            // e.g. is the metadata object a barcode
+            if find(barcodeTypes, String(metadata.type)) != nil {
+                // If it is, print out the type so we can see what it is
+                
+                println("Barcode type is \(String(metadata.type))")
+                
+                // Get the barcode object in machine readable format
+                if let barcode = self.previewLayer?.transformedMetadataObjectForMetadataObject(metadata as AVMetadataObject) as? AVMetadataMachineReadableCodeObject {
+                
+                    // Get the barcode string
+                    let barcodeString = barcode.stringValue
+                    
+                    // Show the user
+                    let alert = UIAlertController(title: "Found a barcode", message: "Bar code is: \(barcodeString)", preferredStyle: .Alert)
+
+                    alert.addAction(UIAlertAction(title: "Ok", style: .Default, handler: { (alertAction) -> Void in
+                        self.canCaptureBarcode = false
+                    }))
+                    self.presentViewController(alert, animated: true, completion: nil)
+                    return
+                
+                }
+
+            }
+        }
+    }
 
 }
 
