@@ -78,14 +78,14 @@ class ViewController: UIViewController {
         return touchPer
     }
     
-    override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
-        let touchPer = touchPercent( touches.anyObject() as UITouch )
+    override func touchesBegan(touches: Set<NSObject>, withEvent event: UIEvent) {
+        let touchPer = touchPercent( touches.first as! UITouch )
         //focusTo(Float(touchPer.x))
         updateDeviceSettings(Float(touchPer.x), isoValue: Float(touchPer.y))
     }
 
-    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
-        let touchPer = touchPercent( touches.anyObject() as UITouch )
+    override func touchesMoved(touches: Set<NSObject>, withEvent event: UIEvent) {
+        let touchPer = touchPercent( touches.first as! UITouch )
        //focusTo(Float(touchPer.x))
         updateDeviceSettings(Float(touchPer.x), isoValue: Float(touchPer.y))
     }
